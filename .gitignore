@@ -9,3 +9,17 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+# 最终提交到github的我们希望是 源码 而不是一些没有什么用的文件(编译后产生的, idea的配置文件, ...)
+# .gitignore 中内容 表示是git忽略的, 不进行版本控制的, 每次add, commit会忽略这些路径或文件
+**/mvnw
+**/mvnw.cmd
+**/.mvn
+
+**/target/
+
+.idea
+
+**/.gitignore
+**/README.md
+
