@@ -1,0 +1,20 @@
+server:
+  port: 7000
+
+spring:
+  application:
+    name: gulimall-coupon
+  datasource:
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.10:3306/gulimall_sms?serverTimezone=Asia/Shanghai
+
+mybatis-plus:
+  # 扫描 sql.xml 文件 classpath*:/mapper/**/*.xml 这个 classpath*: 表示不止扫描自己的类路径包括引用的其他依赖的类路径, classpath: 表示扫描自己的类路径
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      # MyBatis-Plus 主键自增, 实体类的id属性上可以使用 @TableId(type = IdType.AUTO) 来表示主键自增, 但是每个实体类上都要加就比较麻烦
+      # 此处配置主键自增策略后, 就不用每个实体类id属性都配置主键自增策略了(前期先用auto, 后期分库分表后可能会用 ID_WORKER)
+      id-type: auto
