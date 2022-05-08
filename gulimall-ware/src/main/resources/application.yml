@@ -9,6 +9,12 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.10:3306/gulimall_wms?serverTimezone=Asia/Shanghai
+  cloud:
+    nacos:
+      discovery:
+        # nacos 注册中心地址
+        server-addr: 127.0.0.1:8848
+
 mybatis-plus:
   # 扫描 sql.xml 文件 classpath*:/mapper/**/*.xml 这个 classpath*: 表示不止扫描自己的类路径包括引用的其他依赖的类路径, classpath: 表示扫描自己的类路径
   mapper-locations: classpath:/mapper/**/*.xml

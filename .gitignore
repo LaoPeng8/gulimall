@@ -23,3 +23,5 @@ buildNumber.properties
 **/.gitignore
 **/README.md
 
+**/gulimall-*.iml
+

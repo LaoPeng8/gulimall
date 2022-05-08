@@ -3,6 +3,7 @@ package org.pjj.gulimall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * 1、整合MyBatis-Plus
@@ -23,6 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Date 2022/5/7 14:15
  */
 @SpringBootApplication
+@EnableDiscoveryClient //开启nacos服务注册与发现
 @MapperScan("org.pjj.gulimall.product.dao")
 public class GulimallProductApplication {
     public static void main(String[] args) {
