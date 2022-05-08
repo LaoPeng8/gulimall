@@ -11,6 +11,7 @@
     <description>谷粒商城-父项目 (聚合服务)</description>
     <packaging>pom</packaging>
 
+    <!-- 配置完聚合后, 以后只要操作总工程, 则会自动操作 该聚合中配置过的工程 例如总工程package, 那么子模块都会package -->
     <modules>
         <module>gulimall-coupon</module>
         <module>gulimall-member</module>
