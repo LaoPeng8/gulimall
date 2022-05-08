@@ -3,6 +3,7 @@ package org.pjj.gulimall.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.pjj.gulimall.member.feign.CouponFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,6 @@ import org.pjj.gulimall.member.entity.MemberEntity;
 import org.pjj.gulimall.member.service.MemberService;
 import org.pjj.common.utils.PageUtils;
 import org.pjj.common.utils.R;
-
-
 
 /**
  * 会员
@@ -29,6 +28,19 @@ import org.pjj.common.utils.R;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private CouponFeignService couponFeignService;
+
+    @RequestMapping("/coupons")
+    public R test() {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setNickname("张三");
+        R membercoupons = couponFeignService.memberCoupons();
+
+        return R.ok().put("member", memberEntity).put("coupons", membercoupons.get("coupons"));
+        
+    }
 
     /**
      * 列表
