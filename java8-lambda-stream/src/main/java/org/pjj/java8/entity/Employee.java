@@ -17,6 +17,15 @@ public class Employee {
     public Employee() {
     }
 
+    public Employee(String name) {
+        this.name = name;
+    }
+
+    public Employee(Integer age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
     public Employee(Long id, String name, Integer age, BigDecimal salary) {
         this.id = id;
         this.name = name;
