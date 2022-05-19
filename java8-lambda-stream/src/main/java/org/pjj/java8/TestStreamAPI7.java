@@ -27,6 +27,15 @@ import java.util.stream.Stream;
  * 一、Stream 的三个操作步骤
  *
  * 1. 创建 Stream
+ *      1.
+ *          Stream<String> stream = list对象.stream();
+ *      2.
+ *          Stream<Employee> stream1 = Arrays.stream(数组对象);
+ *      3.
+ *          Stream<String> stream2 = Stream.of("aa", "bb", "cc", "dd");
+ *      4.
+ *          Stream<Integer> iterate = Stream.iterate(0, (x) -> x + 2); //无线循环 下标从 0 开始 每次 + 2
+ *          Stream<Double> generate = Stream.generate(Math::random); //无线循环 没有下标, 每次生成随机数
  *
  * 2. 中间操作
  *
