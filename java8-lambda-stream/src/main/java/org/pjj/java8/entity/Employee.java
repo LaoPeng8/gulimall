@@ -1,6 +1,7 @@
 package org.pjj.java8.entity;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * 员工实体类
@@ -13,6 +14,7 @@ public class Employee {
     private String name;
     private Integer age;
     private BigDecimal salary;
+    private Status status;
 
     public Employee() {
     }
@@ -31,6 +33,22 @@ public class Employee {
         this.name = name;
         this.age = age;
         this.salary = salary;
+    }
+
+    public Employee(Long id, String name, Integer age, BigDecimal salary, Status status) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.salary = salary;
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Long getId() {
@@ -61,8 +79,25 @@ public class Employee {
         return salary;
     }
 
+    public Double getSalary2() {
+        return salary.doubleValue();
+    }
+
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(age, employee.age) && Objects.equals(salary, employee.salary);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, age, salary);
     }
 
     @Override
@@ -72,6 +107,14 @@ public class Employee {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", salary=" + salary +
+                ", status=" + status +
                 '}';
     }
+
+    public enum Status {
+        FREE,
+        BUSY,
+        VOCATION;
+    }
+
 }
