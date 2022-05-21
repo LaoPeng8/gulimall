@@ -105,6 +105,7 @@ public class TestStreamAPI10 {
         System.out.println(count3);
     }
 
+
     /**
      * 1. 找出2011年发生的所有交易,并按交易额排序（从低到高)
      */
@@ -196,9 +197,9 @@ public class TestStreamAPI10 {
      */
     @Test
     public void test10() {
-        IntSummaryStatistics collect = transactionList.stream()
-                .collect(Collectors.summarizingInt(Transaction::getValue)); //传入交易额返回 IntSummaryStatistics 对象
-        System.out.println(collect.getMin());
+        Optional<Transaction> min = transactionList.stream()
+                .min((t1, t2) -> Integer.compare(t1.getValue(), t2.getValue()));
+        System.out.println(min.get());
     }
 
 
