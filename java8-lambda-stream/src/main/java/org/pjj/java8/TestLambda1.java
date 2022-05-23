@@ -18,7 +18,7 @@ import java.util.*;
  * @author PengJiaJun
  * @Date 2022/5/12 21:59
  */
-public class TestLambda {
+public class TestLambda1 {
 
     List<Employee> employeeList = Arrays.asList(
             new Employee(1L, "张三", 21, new BigDecimal(3000)),
