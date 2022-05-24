@@ -11,12 +11,33 @@ spring:
     # 网关配置
     gateway:
       routes:
-        - id: test_route
-          uri: https://www.baidu.com
+#        - id: product_route id可以随意, 但是尽量有意义 比如 product_route 或直接用 服务名也可
+#          uri: lb://gulimall-product  lb://表示负载均衡  lb://服务名  表示要路由的服务, 当同一个服务名在注册中心有多个注册时 lb:// 可以负载均衡
+#          predicates: 断言 只有满足条件的才可以路由到服务, 断言可以有多种 - Path 只是其中一种
+#            - Path=/api/product/** 根据路径断言 满足 /api/product/** 才会路由 到 http://服务:端口/api/product/** (路径是一样的 只是会根据服务名 找到该服务的 ip:port)
+#          filters:
+#            # 意思是将从网关过来的请求，去掉/api/, 用 代替
+#            # 即 http://localhost:88/api/product/catgory/list/tree 转为 http://服务ip:服务端口/product/catgory/list/tree
+#            - RewritePath=/api/(?<segment>.*),$\{segment}
+
+        - id: product_route
+          uri: lb://gulimall-product
           predicates:
-            - Query=url, baidu
-        - id: test_route222
-          uri: https://www.qq.com
+            - Path=/api/product/**
+          filters:
+            # 意思是将从网关过来的请求，去掉/api/, 用 代替
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: admin_route
+          uri: lb://renren-fast
           predicates:
-            - Query=url, qq
+            # 该路由需要放在最下面 否则 /api/** 最大, 什么都由该路由跳转了, 其他的 /api/product/** 就跳转不了了...
+            - Path=/api/**
+          # 前端传入 http://localhost:88/api/captcha.jpg, gateway转为 http://localhost:8080/renren-fast/captcha.jpg
+          # 请求到达网关 利用断言判断是否符合某个路由规则, 然后安装路由规则经过一系列的过滤器之后, 发送到指定的地方
+          # 但是 经过网关路由后一些请求的url会发生变动导致 404 如: http://localhost:8080/api/captcha.jpg
+          # 此时需要重写路径, 通过网关的过滤器, 使用正则表达式可以重写路径
+          filters:
+            # 意思是将从网关过来的请求，去掉/api/, 用/renren-fast/代替
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
 
