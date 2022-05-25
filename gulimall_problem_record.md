@@ -20,3 +20,13 @@ Exception encountered during context initialization - cancelling refresh attempt
 
 百度后发现是 springboot 与 springcloud 版本不兼容导致, 将 springboot版本由 2.6.6 修改为 2.3.7.RELEASE 后，成功
 
+
+
+# 2022/5/25 今天啥也没干
+
+
+```
+今天有点抑郁，啥也没干，主要就是昨天做谷粒商城时配置gateway得一个 filters: RewritePath=路径 重写路径感觉有点看不太懂，gateway配置跨域时，虽然是固定配置直接可以从以前的项目copy过来但是感觉面试问的话可能我也答不上来。
+其次就是抖音经常刷到的一些面试，感觉问的东西都挺高级的，我都不太会的样子很理论感觉我也是根本记不住的样子，自己简历上写的一些东西 都是很久以前学的 比如快排 都是2020年学的了，现在看记得大概理论但是写估计也写不出来，就是感觉拿捏不住还要jvm sql优化啥的，感觉会但是说又说不出来什么，以前学过的东西感觉自己忘的很快。 能不能找到实习哟。不过不管怎么说明天继续Java吧！
+```
+
