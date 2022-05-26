@@ -104,6 +104,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return entityTwoList;
     }
 
+    /**
+     * 批量删除分类 (传入 分类id 集合)
+     * @param asList
+     */
+    @Override
+    public void removeMenuByIds(List<Long> asList) {
+
+//        TODO 1. 检查当前删除的菜单, 是否被别的地方引用
+
+        // 逻辑删除
+        baseMapper.deleteBatchIds(asList);
+    }
+
 
 
 

@@ -20,5 +20,8 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     // 查出所有分类以及子分类, 以树形结构封装返回 (三级分类)
     List<CategoryEntity> listWithTree();
+
+    // 批量删除分类 (传入 分类id 集合)
+    void removeMenuByIds(List<Long> asList);
 }
 
