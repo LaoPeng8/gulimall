@@ -6,7 +6,7 @@
 
 
 
-# application.yml 修改 port 不生效
+# 错误: application.yml 修改 port 不生效
 
 ```
 修改 server: port: 8000 不生效 端口依旧是 8080 不管是重启idea还是 Rebulid project 还是刷新maven都没用
@@ -17,7 +17,7 @@
 ```
 
 
-# java.lang.NoClassDefFoundError: ConfigurationBeanFactoryMetadata
+# 错误: java.lang.NoClassDefFoundError: ConfigurationBeanFactoryMetadata
 
 ```
 Exception encountered during context initialization - cancelling refresh attempt: 
@@ -34,7 +34,7 @@ is java.lang.NoClassDefFoundError: org/springframework/boot/context/properties/C
 
 
 
-# 2022/5/25 今天啥也没干
+# 记录: 2022/5/25 今天啥也没干
 
 ```
 今天有点抑郁，啥也没干，主要就是昨天做谷粒商城时配置gateway得一个 filters: RewritePath=路径 重写路径感觉有点看不太懂，
@@ -46,10 +46,32 @@ gateway配置跨域时，虽然是固定配置直接可以从以前的项目copy
 ```
 
 
-# 2022/5/26
+# 记录: 2022/5/26
 
 ```
 今天编写 删除分类时老师说 需要判断该分类是否被其他地方使用, 醍醐灌顶, 以前居然写谷粒学院时 删除分类就是 判断 当前分类下如果还有子分类就不让删除, 只能删除没有子分类的分类,
 这完全就是说从后台管理系统的角度看的, 如果前台系统 有商品是属于这个分类的, 就算这个分类没有子分类 删除了, 那这些属于该分类的商品怎么办?
+```
+
+
+# 记录: 2022/5/27
+```
+发送请求获取当前节点最新的数据 (有人可能会问 点击edit后, 不是通过参数data将被点击的节点数据传入此方法了吗, 直接使用data的数据回显不行吗?)
+会发生一种这样的问题, 如果两个管理员同时在操作这个分类, 一个修改了分类, 另一个也修改分类但是此时回显的数据就是有问题的数据
+回显的是 老数据, 也就是没有被修改的数据, 而真正的分类已经被修改了, 只是自己没有刷新而已, 所以需要根据id请求最新数据
+```
+
+
+# 错误: Long不能使用==, 需要使用equals
+```
+问题描述: 返回三级分类树形结构接口, 前十几个一级分类很正常(一级分类中包含二级分类, 二级分类中包含三级分类)数据都很正常, 后面几个分类, 只有一级分类二级分类, 没有三级分类
+刚开始挺纳闷 看了几遍代码没有什么头绪, 后来观察数据发现前面都是挺正常的 一直到 “运动健康”分类的 第三个二级分类时, 数据就不对了没有三级分类
+于是去找这个 “运动健康” 下到底有没有 三级分类 SELECT * FROM `pms_category` where parent_cid = '128'
+到这里我看着这个 id 128 忽然就感觉明白了 之前看过 Integer 与 Integer 与 int 之间比较的题目 知道这个 Integer 与 Integer之间使用 == 比较时 -128 ~ 127 之间 是 true
+因为 Integer 内有缓存, 是同一个对象 所以 == 是true, Integer之间比较需要使用equals,  Long 同理
+即修改
+List<CategoryEntity> entityThree = all.stream()
+    .filter((allEntity) -> allEntity.getParentCid() == entityTwo.getCatId()) //过滤出二级分类的三级分类 (修改前)
+    .filter((allEntity) -> allEntity.getParentCid().equals(entityTwo.getCatId())) //过滤出二级分类的三级分类 (修改后)
 ```
 
