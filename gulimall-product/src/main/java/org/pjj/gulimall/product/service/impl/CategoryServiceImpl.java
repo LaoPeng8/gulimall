@@ -44,7 +44,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .filter((categoryEntity) -> categoryEntity.getCatLevel() == 1)
                 .map((menu) -> {
                     // 找出当前分类 的子分类以及子子分类, 放入当前分类的children中
-                    menu.setChildren(getChildren(menu, allCategory));
+//                    menu.setChildren(getChildren(menu, allCategory));//使用递归
+                    menu.setChildren(getChildrenByFor(menu, allCategory)); //使用for
                     return menu;
                 })
                 .sorted((menu1, menu2) -> Integer.compare((menu1.getSort()==null?0:menu1.getSort()), (menu2.getSort()==null?0:menu2.getSort())))
@@ -64,12 +65,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<CategoryEntity> children = all.stream()
                 .filter(currentCategory -> {
                     // 从全部分类数据中 过滤出 root菜单的子菜单
-                    return currentCategory.getParentCid() == root.getCatId();
+                    return currentCategory.getParentCid().equals(root.getCatId());
                 })
                 .map(currentCategory -> {
                     // 为root菜单中的每一个子菜单, 继续递归查找子子菜单, 并放入子菜单的children中
-//                    currentCategory.setChildren(getChildren(currentCategory, all)); //使用递归
-                    currentCategory.setChildren(getChildrenByFor(currentCategory, all)); //使用for
+                    currentCategory.setChildren(getChildren(currentCategory, all)); //使用递归
                     return currentCategory;
                 })
                 .sorted((menu1, menu2) -> Integer.compare((menu1.getSort()==null?0:menu1.getSort()), (menu2.getSort()==null?0:menu2.getSort())))
@@ -87,11 +87,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private List<CategoryEntity> getChildrenByFor(CategoryEntity root, List<CategoryEntity> all) {
 
         ArrayList<CategoryEntity> entityTwoList = all.stream()
-                .filter((entity) -> entity.getParentCid() == root.getCatId()) //过滤出一级分类的二级分类
+                .filter((entity) -> entity.getParentCid().equals(root.getCatId())) //过滤出一级分类的二级分类
                 .map(entityTwo -> {
                     // 为二级分类 设置 三级分类, 并将设置过三级分类的二级分类返回
                     List<CategoryEntity> entityThree = all.stream()
-                            .filter((allEntity) -> allEntity.getParentCid() == entityTwo.getCatId()) //过滤出二级分类的三级分类
+                            .filter((allEntity) -> allEntity.getParentCid().equals(entityTwo.getCatId())) //过滤出二级分类的三级分类
                             .sorted((menu1, menu2) -> Integer.compare((menu1.getSort() == null ? 0 : menu1.getSort()), (menu2.getSort() == null ? 0 : menu2.getSort())))
                             .collect(Collectors.toList());
                     entityTwo.setChildren(entityThree);//给每一个二级分类 设置 三级分类
