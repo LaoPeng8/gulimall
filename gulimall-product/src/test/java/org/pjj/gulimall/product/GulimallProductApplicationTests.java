@@ -136,8 +136,8 @@ class GulimallProductApplicationTests {
      *   cloud:
      *     alicloud:
      *       # 配置 阿里云OSS 的access-key, secret-key, endpoint
-     *       access-key: LTAI5tCJ3PpaTFWCPktZ5AA8
-     *       secret-key: SAZTfCeEFBzdrj2NmKtrUOHU204XBf
+     *       access-key: xxx
+     *       secret-key: xxx
      *       oss:
      *         endpoint: oss-cn-beijing.aliyuncs.com
      *
