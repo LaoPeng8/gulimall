@@ -155,8 +155,8 @@ class GulimallProductApplicationTests {
     @Test
     void test5() throws FileNotFoundException {
         String bucketName = "gulimall-2022-5-29";
-        String objectName = "2022/5/30/YF.jpg";
-        String filePath= "C:/Users/PengJiaJun/Desktop/YF.jpg";
+        String objectName = "cs.jpg";
+        String filePath= "C:/Users/PengJiaJun/Desktop/cs.jpg";
 
         InputStream inputStream = new FileInputStream(filePath);
 
