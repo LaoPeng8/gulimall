@@ -14,27 +14,6 @@
 
     <dependencies>
 
-        <!-- 阿里云OSS 与 springboot 的整合依赖 (视频中是使用这个依赖, 而且github上的官方文档也是这个, 不过不知道为什么找不到) -->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>aliyun-oss-spring-boot-starter</artifactId>-->
-<!--        </dependency>-->
-
-        <!-- 阿里云OSS 与 springboot 的整合依赖 (还是我在maven网站中搜 com.alibaba.cloud 然后一点点找 名字带 OSS 的才找到的) -->
-        <!-- https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-alicloud-oss -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-alicloud-oss</artifactId>
-        </dependency>
-
-
-        <!--        使用 阿里云对象存储OSS 所需要的依赖 (原生依赖, 不用集成springboot就可以使用的) -->
-<!--        <dependency>-->
-<!--            <groupId>com.aliyun.oss</groupId>-->
-<!--            <artifactId>aliyun-sdk-oss</artifactId>-->
-<!--            <version>3.10.2</version>-->
-<!--        </dependency>-->
-
         <!-- mybatis-plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
