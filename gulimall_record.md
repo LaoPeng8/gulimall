@@ -75,3 +75,22 @@ List<CategoryEntity> entityThree = all.stream()
     .filter((allEntity) -> allEntity.getParentCid().equals(entityTwo.getCatId())) //过滤出二级分类的三级分类 (修改后)
 ```
 
+# 错误: JSR303校验不生效
+```
+问题描述: 给Bean添加校验注解 如 给属性 name 加上注解 @NotBlank 表示该name属性 不能为空字符串
+后在 需要使用校验处加上 @Valid注解 如 public R save(@Valid @RequestBody BrandEntity brand)
+然后使用 postman测试 不知为何 @NotBlank 不生效 查看部分文章后发现 https://blog.csdn.net/numbbe/article/details/118711371 (只是根据文章中引入了 hibernate-validator依赖, 并没有使用 hibernate下的 @NotBlank, 还是使用的 java.validation中的 @NotBlank)
+加入 依赖 原本只依赖了 jakarta.validation-api 但是不生效, 后来又引入了 hibernate-validator 即可成功执行
+但是和老师的 携带空字符串 请求接口被@NotBlank拦下来后返回测错误信息不一样(老师的更详细), 而且老师也不需要引入这两个依赖, 很奇怪
+        <!-- JSR 303 校验 -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <!-- JSR 303 校验 可能要搭配 该依赖使用 否则 添加了 @NotNull 与 @Valid 都不生效啊, 加入该依赖后生效了 -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.0.Final</version>
+        </dependency>
+```
