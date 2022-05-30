@@ -28,6 +28,15 @@ spring:
             # 意思是将从网关过来的请求，去掉/api/, 用 代替
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        # http://localhost:88/api/thirdparty/oss/policy
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            # 意思是将从网关过来的请求，去掉/api/thirdparty, 用 代替
+            - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:
