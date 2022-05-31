@@ -94,3 +94,10 @@ List<CategoryEntity> entityThree = all.stream()
             <version>6.2.0.Final</version>
         </dependency>
 ```
+
+# 记录: 2022/5/31
+```
+昨天关电脑后, 今天开启啥也没干 gulimall-gateway出现注册不到nacos, gulimall-third-party出现读取不到nacos配置文件, 服务都起不来
+经过一顿排查, 意外在右侧Maven按钮中发现 guliamll-gateway 与 gulimall-third-party 依赖全部爆红, 不知道为什么, 刷新也没用, Rebulid Project也没用
+后来我将每个爆红的依赖注释了再放开注释就好了???? 依赖不报红了, 启动服务也可以注册到nacos, nacos的配置文件也可以读取了????
+```
