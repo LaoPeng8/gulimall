@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package org.pjj.common.validator.group;
+package org.pjj.common.renrenfast.validator.group;
 
 /**
  * 阿里云

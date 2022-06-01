@@ -6,11 +6,11 @@
  * 版权所有，侵权必究！
  */
 
-package org.pjj.common.utils;
+package org.pjj.common.renrenfast.utils;
 
-import org.pjj.common.validator.group.AliyunGroup;
-import org.pjj.common.validator.group.QcloudGroup;
-import org.pjj.common.validator.group.QiniuGroup;
+import org.pjj.common.renrenfast.validator.group.AliyunGroup;
+import org.pjj.common.renrenfast.validator.group.QcloudGroup;
+import org.pjj.common.renrenfast.validator.group.QiniuGroup;
 
 import java.util.Optional;
 import java.util.stream.Stream;

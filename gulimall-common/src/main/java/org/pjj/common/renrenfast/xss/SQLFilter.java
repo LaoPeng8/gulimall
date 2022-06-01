@@ -6,10 +6,10 @@
  * 版权所有，侵权必究！
  */
 
-package org.pjj.common.xss;
+package org.pjj.common.renrenfast.xss;
 
 import org.apache.commons.lang.StringUtils;
-import org.pjj.common.exception.RRException;
+import org.pjj.common.renrenfast.exception.RRException;
 
 /**
  * SQL过滤

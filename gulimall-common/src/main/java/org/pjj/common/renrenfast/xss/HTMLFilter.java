@@ -1,4 +1,4 @@
-package org.pjj.common.xss;
+package org.pjj.common.renrenfast.xss;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
