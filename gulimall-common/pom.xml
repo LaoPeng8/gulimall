@@ -12,7 +12,23 @@
     <artifactId>gulimall-common</artifactId>
     <description>谷粒商城-公共模块, 每一个微服务公共的依赖, bean, 工具类等</description>
 
+    <properties>
+        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
+    </properties>
+
     <dependencies>
+
+        <!-- JSR 303 校验 -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <!-- JSR 303 校验 可能要搭配 该依赖使用 否则 添加了 @NotNull 与 @Valid 都不生效啊, 加入该依赖后生效了 -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.0.Final</version>
+        </dependency>
 
         <!-- mybatis-plus -->
         <dependency>
@@ -77,8 +93,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
 
 </project>
