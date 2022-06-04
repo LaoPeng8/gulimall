@@ -3,9 +3,7 @@ package org.pjj.gulimall.product.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,6 +19,9 @@ import org.pjj.gulimall.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -117,7 +118,31 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         baseMapper.deleteBatchIds(asList);
     }
 
+    /**
+     * 根据传入分类id 查询出 分类完整路径
+     * [父id, 子id, 孙id]
+     * @param catelogId
+     * @return
+     */
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> pathList = new ArrayList<>();
+        LinkedHashMap<String, Long> map = categoryDao.findCatelogPathById(catelogId);
+        map.forEach((k, v) -> {
+            if(v != 0) {
+                pathList.add(v);
+            }
+        });
 
+        Collections.reverse(pathList);//反转list
+
+        Long[] paths = new Long[pathList.size()];
+        for (int i = 0; i < pathList.size(); i++) {
+            paths[i] = pathList.get(i);
+        }
+
+        return paths;
+    }
 
 
 }

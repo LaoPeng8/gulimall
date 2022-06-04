@@ -3,6 +3,7 @@ package org.pjj.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.pjj.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,13 +31,19 @@ public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     /**
-     * 列表
+     * 根据分类id 分页查询
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/{catelogId}")
     //@RequiresPermissions("product:attrgroup:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params, @PathVariable("catelogId") Long catelogId){
+//        PageUtils page = attrGroupService.queryPage(params); //老的分页查询, 只能查全部attrGroup
+
+        //新的分页查询, 根据catelogId查询attrGroup, catelogId=0 查询全部
+        PageUtils page = attrGroupService.queryPage(params, catelogId);
 
         return R.ok().put("page", page);
     }
@@ -49,6 +56,9 @@ public class AttrGroupController {
     //@RequiresPermissions("product:attrgroup:info")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
+
+        Long[] path = categoryService.findCatelogPath(attrGroup.getCatelogId());// 根据 当前分类id 查询分类完整路径
+		attrGroup.setCatelogPath(path);//设置 分类的完整路径id [1, 23, 55] 即 当前attr属于55分类, 55分类属于23分类, 23分类属于 1分类
 
         return R.ok().put("attrGroup", attrGroup);
     }
