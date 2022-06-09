@@ -109,11 +109,12 @@ public class BrandController {
 
     /**
      * 修改
+     * 修改时需要保证与当前表关联的其他表中关于当前表的冗余字段 进行同步跟新
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
     public R update(@RequestBody @Validated(value = {UpdateGroup.class}) BrandEntity brand){
-		brandService.updateById(brand);
+		brandService.updateDetail(brand);
 
         return R.ok();
     }

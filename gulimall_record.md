@@ -101,3 +101,38 @@ List<CategoryEntity> entityThree = all.stream()
 经过一顿排查, 意外在右侧Maven按钮中发现 guliamll-gateway 与 gulimall-third-party 依赖全部爆红, 不知道为什么, 刷新也没用, Rebulid Project也没用
 后来我将每个爆红的依赖注释了再放开注释就好了???? 依赖不报红了, 启动服务也可以注册到nacos, nacos的配置文件也可以读取了????
 ```
+
+# 记录: 2022/6/4
+```
+电商系统中性能很重要, 所以在数据库设计中会有很多冗余字段, 比如在 pms_category_brand_relation 也就是 分类与品牌关联表中就不是单纯的存储 分类id 与 品牌id
+还存储了 分类名称 与 品牌名称, 这就是冗余的字段, 这样就是避免了很多 多表查询, 提高了性能, 但是这样会造成一个问题: 就是分类或品牌在自己的表中name被修改了,
+但是 分类与品牌关联表中的数据就不一致了, 所以这就是需要从业务中保证它们的一致性. 比如在修改分类名后 需要根据被修改的分类 把分类与品牌关联表中的分类进行同步
+```
+
+# 记录: 2022/6/5
+```
+大表之间不要做连接查询, 比如说: 商品属性表中有100万条数据(商品很多), 属性分组就算只有1000条数据, 在极端条件下做笛卡尔乘积就会生成10亿的数据
+我是这样理解的: 连接查询都是需要where条件的, 如果没有where条件就会生成笛卡尔乘积, 相当于每次连接查询都是会产生很大的数据量的, 效率真的不高
+可以从业务的方面通过多次单表查询来完成, 可以参考 AttrServiceImpl 中的方法 public PageUtils queryBaseAttrPage(Long catelogId, Map<String, Object> params)
+```
+
+# 记录: 2022/6/9 VirtualBox无法启动
+```
+因为准备期末考试好几天没有打开idea所以也没有打开BirtualBox, 现在考查课完事了, 一个星期后考试课, 准备上来写两个接口, 发现VirtualBox启动报错
+
+报错记录: 
+创建 VirtualBoxClient COM 对象失败.  应用程序将被中断.    没有注册类  .  组件:  界面: {00000000-0000-0000-0000-000000000000} 被召者 RC: REGDB_E_CLASSNOTREG (0x80040154)
+
+解决: 总结起来就一句话：兼容性害死人不偿命呐。
+此时需要运行下面两个程序: VBoxSVC.exe /ReRegServer    regsvr32.exe VBoxC.dll
+
+运行方法：打开控制台（Win + R  -> cmd），然后 cd 到 VirtualBox 的安装目录，
+首先运行 VBoxSVC.exe /ReRegServer ，接着再输入 regsvr32.exe VBoxC.dll 运行。运行结束后，关闭控制台。
+例如: 
+D:\eatMeal\Linux\LinuxSoftware\VirtualBox VBoxSVC.exe /ReRegServer
+D:\eatMeal\Linux\LinuxSoftware\VirtualBox regsvr32.exe VBoxC.dll
+
+此时，运行完两个指令之后，返回桌面，再次双击VirtualBox打开，可能你现在还会遇到之前报的这个错误，怎么办捏？
+这个问题是你的权限不够，在VirtualBox桌面图标上点击鼠标右键执行“以管理员权限运行”打开就可以了，下次再使用的时候就只需要双击左键即可。
+OK！问题解决！
+```

@@ -26,5 +26,7 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     // 根据传入分类id 查询出 分类完整路径 Long [父id, 子id, 孙id]
     Long[] findCatelogPath(Long catelogId);
+
+    void updateCascade(CategoryEntity category);
 }
 

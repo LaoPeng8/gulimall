@@ -21,7 +21,8 @@ package org.pjj.common.exception;
  */
 public enum BizCodeEnum {
     UNKNOW_EXCEPTION(10000, "系统未知异常"),
-    VAILD_EXCEPTION(10001, "参数格式校验失败");
+    VAILD_EXCEPTION(10001, "参数格式校验失败"),
+    PARAMETER_EMPTY_EXCEPTION(11002, "方法传入参数为空");
 
     private int code;
     private String msg;

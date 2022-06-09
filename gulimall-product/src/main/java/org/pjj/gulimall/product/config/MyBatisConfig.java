@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @Date 2022/06/04 17:04
  */
 @Configuration
-@EnableTransactionManagement
+@EnableTransactionManagement // 开启事务
 @MapperScan("org.pjj.gulimall.product.dao")
 public class MyBatisConfig {
 

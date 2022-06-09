@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.pjj.common.valid.AddGroup;
+
+import javax.validation.constraints.Null;
 
 /**
  * 品牌分类关联
@@ -23,6 +26,7 @@ public class CategoryBrandRelationEntity implements Serializable {
 	 * 
 	 */
 	@TableId
+	@Null(groups = AddGroup.class) // 做增加操作时id必须为null
 	private Long id;
 	/**
 	 * 品牌id

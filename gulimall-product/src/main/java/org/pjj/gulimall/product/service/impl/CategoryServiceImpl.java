@@ -1,5 +1,6 @@
 package org.pjj.gulimall.product.service.impl;
 
+import org.pjj.gulimall.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import org.pjj.common.utils.Query;
 import org.pjj.gulimall.product.dao.CategoryDao;
 import org.pjj.gulimall.product.entity.CategoryEntity;
 import org.pjj.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
@@ -22,6 +24,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -142,6 +147,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
 
         return paths;
+    }
+
+    /**
+     * 级联更新所有关联的数据
+     * @param category
+     */
+    @Transactional
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        // 更新自己
+        this.updateById(category);
+
+        // 级联更新其他关联表中的数据
+        categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
+
+        // TODO 更新其他关联
     }
 
 
