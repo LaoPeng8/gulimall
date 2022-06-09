@@ -28,10 +28,11 @@ public class AttrController {
     @Autowired
     private AttrService attrService;
 
-    @GetMapping("/base/list/{catelogId}")
-    public R baseAttrList(@PathVariable("catelogId") Long catelogId, @RequestParam Map<String, Object> params) {
+    @GetMapping("/{attrType}/list/{catelogId}")
+    public R baseAttrList(@PathVariable("attrType") String type, @PathVariable("catelogId") Long catelogId,
+                          @RequestParam Map<String, Object> params) {
 
-        PageUtils page = attrService.queryBaseAttrPage(catelogId, params);
+        PageUtils page = attrService.queryBaseAttrPage(catelogId, params, type);
 
         return R.ok().put("page", page);
     }

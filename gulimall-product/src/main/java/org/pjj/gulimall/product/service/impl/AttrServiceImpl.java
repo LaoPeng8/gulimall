@@ -1,6 +1,7 @@
 package org.pjj.gulimall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.pjj.common.constant.ProductConstant;
 import org.pjj.gulimall.product.dao.AttrAttrgroupRelationDao;
 import org.pjj.gulimall.product.dao.AttrGroupDao;
 import org.pjj.gulimall.product.dao.CategoryDao;
@@ -67,19 +68,24 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public void saveAttr(AttrVo attr) {
         AttrEntity attrEntity = new AttrEntity();
         BeanUtils.copyProperties(attr, attrEntity);
+
         //插入 attr 表
         this.baseMapper.insert(attrEntity);
 
-        AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
-        attrAttrgroupRelationEntity.setAttrId(attrEntity.getAttrId());//attrEntity中的attrId是mybatis自增后返回的, attr中是没有attrId的.
-        attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
-        //插入 attr_attrgroup_relation 表 (关联表)
-        attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+        // 只有当 attrtype == 1 是才向属性与属性分组表插入关联关系(因为 1 为基本属性, 0为销售属性, 销售属性没有属性分组, 所以不需要插入关联表)
+        if(attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
+            AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
+            attrAttrgroupRelationEntity.setAttrId(attrEntity.getAttrId());//attrEntity中的attrId是mybatis自增后返回的, attr中是没有attrId的.
+            attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
+            //插入 attr_attrgroup_relation 表 (关联表)
+            attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+        }
+
     }
 
 
     @Override
-    public PageUtils queryBaseAttrPage(Long catelogId, Map<String, Object> params) {
+    public PageUtils queryBaseAttrPage(Long catelogId, Map<String, Object> params, String type) {
         QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<>();
 
         String key = (String) params.get("key");
@@ -93,7 +99,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             queryWrapper.eq("catelog_id", catelogId);
         }
 
+        if(!"sale".equalsIgnoreCase(type)) {//如果传入的type不等于"sale"则都视为"base" (base 为基本属性 1, sale 为销售属性 0)
+            type = "base";
+        }
+        queryWrapper.eq("attr_type", "base".equalsIgnoreCase(type) ? ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode() : ProductConstant.AttrEnum.ATTR_TYPE_SALE.getCode());
         IPage<AttrEntity> attrEntityIPage = this.baseMapper.selectPage(new Query<AttrEntity>().getPage(params), queryWrapper);
+
 
         PageUtils pageUtils = new PageUtils(attrEntityIPage);
         List<AttrEntity> records = attrEntityIPage.getRecords();//取出需要修改的记录
@@ -152,12 +163,15 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         Long[] catelogPath = categoryService.findCatelogPath(attrRespVo.getCatelogId());
         attrRespVo.setCatelogPath(catelogPath);
 
-        // 根据 attr_id 从 attr_attrgroup_relation关联表中查出, 该 attr 属于哪个 attrgroup 的 id
-        AttrAttrgroupRelationEntity attrGroupId = attrAttrgroupRelationDao.selectOne(
-                new QueryWrapper<AttrAttrgroupRelationEntity>().select("attr_group_id").eq("attr_id", attrRespVo.getAttrId())
-        );
-        if(null != attrGroupId) {
-            attrRespVo.setAttrGroupId(attrGroupId.getAttrGroupId());
+        // 只有当 attrtype == 1 是才查询关联关系(因为 1 为基本属性, 0为销售属性, 销售属性没有属性分组, 所以不需要查询关联表)
+        if(attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
+            // 根据 attr_id 从 attr_attrgroup_relation关联表中查出, 该 attr 属于哪个 attrgroup 的 id
+            AttrAttrgroupRelationEntity attrGroupId = attrAttrgroupRelationDao.selectOne(
+                    new QueryWrapper<AttrAttrgroupRelationEntity>().select("attr_group_id").eq("attr_id", attrRespVo.getAttrId())
+            );
+            if(null != attrGroupId) {
+                attrRespVo.setAttrGroupId(attrGroupId.getAttrGroupId());
+            }
         }
 
         return attrRespVo;
@@ -172,12 +186,16 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         BeanUtils.copyProperties(attr, attrEntity);
         this.updateById(attrEntity);
 
-        // 修改分组
-        AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
-        attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
-        attrAttrgroupRelationDao.update(
-                attrAttrgroupRelationEntity, new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId())
-        );
+        // 只有当 attrtype == 1 是才修改关联关系(因为 1 为基本属性, 0为销售属性, 销售属性没有属性分组, 所以不需要修改关联表)
+        if(attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
+            // 修改分组
+            AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
+            attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
+            attrAttrgroupRelationDao.update(
+                    attrAttrgroupRelationEntity, new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId())
+            );
+        }
+
     }
 
 }
