@@ -1,6 +1,7 @@
 package org.pjj.gulimall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.pjj.common.constant.ProductConstant;
 import org.pjj.gulimall.product.dao.AttrAttrgroupRelationDao;
 import org.pjj.gulimall.product.dao.AttrGroupDao;
@@ -15,10 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -196,6 +194,81 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             );
         }
 
+    }
+
+    /**
+     * 根据分组id查找关联得所有 基本属性(attr_type 为 1 即是基本属性)
+     * @param attrgroupId
+     * @return
+     */
+    @Override
+    public List<AttrEntity> getAttrRelation(Long attrgroupId) {
+        // 根据分组id查询出所有属于该分组得 基本属性id
+        List<AttrAttrgroupRelationEntity> entityList = attrAttrgroupRelationDao.selectList(
+                new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrgroupId)
+        );
+        // 将实体类集合转为 基本属性id集合
+        List<Long> attrIds = entityList.stream()
+                .map((attr) -> {
+                    return attr.getAttrId();
+                }).collect(Collectors.toList());
+
+        if(attrIds == null || attrIds.size() == 0) {
+            return null;
+        }
+        // 查询出所有得 属性
+        List<AttrEntity> attrEntities = this.baseMapper.selectBatchIds(attrIds);
+        // 过滤出基本属性
+        List<AttrEntity> collect = attrEntities.stream().filter((attr) -> {
+            return attr.getAttrType().equals(ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    /**
+     * 获取当前属性分组没有关联得属性
+     *
+     * 1. 当前分组只能关联自己所属分类得属性
+     * 2. 当前分组只能关联别得分组没有引用的属性
+     *
+     * @param attrgroupId
+     * @param params
+     * @return
+     */
+    @Override
+    public PageUtils getNoRelationAttr(Long attrgroupId, Map<String, Object> params) {
+        // 1. 当前分组只能关联自己所属分类得属性
+        AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrgroupId);
+        Long catelogId = attrGroupEntity.getCatelogId();
+
+        // 2. 当前分组只能关联别得分组没有引用的属性
+        // 2.1 当前分类下的其他分组(包括自己 (如果不加入则 当前分组已经关联过的属性, 最后也会被查出来(正确的是只有没有被关联的属性才会被查出来)))
+        List<AttrGroupEntity> otherGroupList = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
+        List<Long> otherGroupIds = otherGroupList.stream().map(AttrGroupEntity::getAttrGroupId).collect(Collectors.toList());
+
+
+        // 2.2 这些分组关联的属性
+        List<AttrAttrgroupRelationEntity> attrRelationList = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", otherGroupIds));
+        List<Long> removeIds = attrRelationList.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
+
+        // 2.3 从当前分类的所有属性中移除这些属性
+        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<AttrEntity>()
+                .eq("catelog_id", catelogId)
+                .eq("attr_type", ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
+        if(removeIds != null && removeIds.size() > 0) {//避免空指针 (如果removeIds为空, 则说明其他分组没有关联属性, 也就不需要将 被关注的属性排除)
+            queryWrapper.notIn("attr_id", removeIds);
+        }
+        // 模糊查询条件不为空, 则在wrapper中加入模糊查询条件
+        String key = (String) params.get("key");
+        if(!StringUtils.isEmpty(key)) {
+            queryWrapper.and((wrapper) -> {
+                wrapper.eq("attr_id", key).or().like("attr_name", key);
+            });
+        }
+
+        IPage<AttrEntity> attrEntityIPage = this.baseMapper.selectPage(new Query<AttrEntity>().getPage(params), queryWrapper);
+
+        return new PageUtils(attrEntityIPage);
     }
 
 }

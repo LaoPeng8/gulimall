@@ -1,15 +1,16 @@
 package org.pjj.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.pjj.gulimall.product.entity.AttrEntity;
+import org.pjj.gulimall.product.entity.vo.AttrGroupRelationVo;
+import org.pjj.gulimall.product.service.AttrService;
 import org.pjj.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.pjj.gulimall.product.entity.AttrGroupEntity;
 import org.pjj.gulimall.product.service.AttrGroupService;
@@ -33,6 +34,46 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AttrService attrService;
+
+    /**
+     * 获取当前属性分组没有关联得属性
+     * @param attrgroupId
+     * @param params
+     * @return
+     */
+    @GetMapping("/{attrgroupId}/no/relation/attr")
+    public R ajkdjalkf(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getNoRelationAttr(attrgroupId, params);
+        return R.ok().put("page", page);
+    }
+
+    /**
+     * 根据属性id 与 属性分组id 从属性分组中删除属性 (批量删除)
+     * @param attrGroupRelationVoList
+     * @return
+     */
+    @PostMapping("/attr/relation/delete")
+    public R attrBatchDelete(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVoList) {
+        attrGroupService.deleteRelationBatch(attrGroupRelationVoList);
+
+
+        return R.ok();
+    }
+
+    /**
+     * 根据分组id查找关联得所有 基本属性(attr_type 为 1 即是基本属性)
+     * @param attrgroupId
+     * @return
+     */
+    @GetMapping("/{attrgroupId}/relation/attr")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId) {
+        List<AttrEntity> list = attrService.getAttrRelation(attrgroupId);
+
+        return R.ok().put("data", list);
+    }
 
     /**
      * 根据分类id 分页查询
@@ -92,6 +133,8 @@ public class AttrGroupController {
     //@RequiresPermissions("product:attrgroup:delete")
     public R delete(@RequestBody Long[] attrGroupIds){
 		attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
+
+//		TODO 删除时还需将 attr_attrgroup_relation 中该分组关联的属性关系都删掉
 
         return R.ok();
     }
