@@ -1,6 +1,11 @@
 package org.pjj.gulimall.product.service.impl;
 
+import org.pjj.gulimall.product.entity.vo.AttrGroupRelationVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +29,19 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
         );
 
         return new PageUtils(page);
+    }
+
+
+    @Override
+    public void saveRelationBatch(List<AttrGroupRelationVo> attrGroupRelationVoList) {
+        ArrayList<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = new ArrayList<>();
+        attrGroupRelationVoList.stream().forEach((attrRelationVo) -> {
+            AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(attrRelationVo, attrAttrgroupRelationEntity);
+            attrAttrgroupRelationEntities.add(attrAttrgroupRelationEntity);
+        });
+
+        this.saveBatch(attrAttrgroupRelationEntities);
     }
 
 }

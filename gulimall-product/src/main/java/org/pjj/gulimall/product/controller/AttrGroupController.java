@@ -7,6 +7,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.pjj.gulimall.product.entity.AttrEntity;
 import org.pjj.gulimall.product.entity.vo.AttrGroupRelationVo;
+import org.pjj.gulimall.product.service.AttrAttrgroupRelationService;
 import org.pjj.gulimall.product.service.AttrService;
 import org.pjj.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AttrGroupController {
     @Autowired
     private AttrService attrService;
 
+    @Autowired
+    private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
     /**
      * 获取当前属性分组没有关联得属性
      * @param attrgroupId
@@ -59,6 +63,12 @@ public class AttrGroupController {
     public R attrBatchDelete(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVoList) {
         attrGroupService.deleteRelationBatch(attrGroupRelationVoList);
 
+        return R.ok();
+    }
+
+    @PostMapping("/attr/relation")
+    public R attrBatchSave(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVoList) {
+        attrAttrgroupRelationService.saveRelationBatch(attrGroupRelationVoList);
 
         return R.ok();
     }

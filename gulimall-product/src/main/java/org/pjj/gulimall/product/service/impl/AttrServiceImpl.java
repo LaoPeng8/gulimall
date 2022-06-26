@@ -75,8 +75,10 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrId(attrEntity.getAttrId());//attrEntity中的attrId是mybatis自增后返回的, attr中是没有attrId的.
             attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
-            //插入 attr_attrgroup_relation 表 (关联表)
-            attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+            if(attr.getAttrGroupId() != null && attr.getAttrGroupId() > 0) {
+                //插入 attr_attrgroup_relation 表 (关联表)
+                attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+            }
         }
 
     }
