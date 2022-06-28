@@ -7,6 +7,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.pjj.gulimall.product.entity.AttrEntity;
 import org.pjj.gulimall.product.entity.vo.AttrGroupRelationVo;
+import org.pjj.gulimall.product.entity.vo.AttrGroupWithAttrsVo;
 import org.pjj.gulimall.product.service.AttrAttrgroupRelationService;
 import org.pjj.gulimall.product.service.AttrService;
 import org.pjj.gulimall.product.service.CategoryService;
@@ -41,6 +42,20 @@ public class AttrGroupController {
 
     @Autowired
     private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    /**
+     * 根据分类id 获取该分类下的所有属性分组 与 每个属性分组下的所有属性
+     * @param catelogId
+     * @return
+     */
+    @GetMapping("/{catelogId}/withattr")
+    private R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId) {
+
+        List<AttrGroupWithAttrsVo> list = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+
+        return R.ok().put("data", list);
+    }
+
 
     /**
      * 获取当前属性分组没有关联得属性
