@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,7 +56,9 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         skuLadderEntity.setDiscount(skuReductionTo.getDiscount());
         skuLadderEntity.setAddOther(skuReductionTo.getCountStatus());
 //        skuLadderEntity.setPrice(); //可以在下订单的时候算折后价 也可以直接算出折后价
-        skuLadderService.save(skuLadderEntity);
+        if(skuLadderEntity.getFullCount() > 0) {// 至少要满1件才打折, 如果不满1件 则是无效数据不会保存至数据库
+            skuLadderService.save(skuLadderEntity);
+        }
 
         //sms_sku_full_reduction
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
@@ -63,7 +66,9 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         skuFullReductionEntity.setFullPrice(skuReductionTo.getFullPrice());
         skuFullReductionEntity.setReducePrice(skuReductionTo.getReducePrice());
         skuFullReductionEntity.setAddOther(skuReductionTo.getPriceStatus());
-        this.save(skuFullReductionEntity);
+        if(skuFullReductionEntity.getFullPrice().compareTo(new BigDecimal("0")) == 1) {
+            this.save(skuFullReductionEntity);
+        }
 
         //sms_member_price
         List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
@@ -75,6 +80,8 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             memberPriceEntity.setMemberPrice(item.getPrice());
             memberPriceEntity.setAddOther(1);
             return memberPriceEntity;
+        }).filter((item) -> {
+            return item.getMemberPrice().compareTo(new BigDecimal("0")) == 1;
         }).collect(Collectors.toList());
         memberPriceService.saveBatch(collect);
 

@@ -15,6 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+    /**
+     * TODO 还有很多东西 高级部分再完善 如: 事务, Feign超时后怎么操作.
+     * 新增加商品
+     * @param spuSaveVo
+     */
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo spuSaveVo) {
@@ -72,6 +79,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         //1. 保存spu基本信息 pms_spu_info
         SpuInfoEntity spuInfoEntity = new SpuInfoEntity();
         BeanUtils.copyProperties(spuSaveVo, spuInfoEntity);
+        spuInfoEntity.setCatelogId(spuSaveVo.getCatelogId());//我不懂为什么为什么数据库是catalog_id 前端传的是catelog_id  其他表也是catelog_id 算了懒得该数据库表了万一出问题了了, 就是这样把
         spuInfoEntity.setCreateTime(new Date());
         spuInfoEntity.setUpdateTime(new Date());
         this.saveBaseSpuInfo(spuInfoEntity);
@@ -110,7 +118,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuInfoEntity skuInfoEntity = new SkuInfoEntity();
                 BeanUtils.copyProperties(item, skuInfoEntity);
                 skuInfoEntity.setSpuId(spuInfoEntity.getId());
-                skuInfoEntity.setCatalogId(spuInfoEntity.getCatalogId());
+                skuInfoEntity.setCatalogId(spuInfoEntity.getCatelogId());
                 skuInfoEntity.setBrandId(spuInfoEntity.getBrandId());
                 skuInfoEntity.setSaleCount(0L);
                 item.getImages().forEach((image) -> {
@@ -132,6 +140,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     }
                     return null;
                 }).collect(Collectors.toList());
+                skuImages.removeAll(Collections.singleton(null));//删除skuImages中所有的null值
                 skuImagesService.saveBatch(skuImages);
 
                 //6.3 sku的销售属性 pms_sku_sale_attr_value
@@ -150,9 +159,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuReductionTo skuReductionTo = new SkuReductionTo();
                 BeanUtils.copyProperties(item, skuReductionTo);
                 skuReductionTo.setSkuId(skuInfoEntity.getSkuId());
-                R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
-                if(r1.getCode() != 0) {
-                    log.error("远程保存sku优惠信息失败");
+                //最少满1件打折 或 最少满1元才满减, 才会将优惠信息保存至数据库否则就是无效数据不保存
+                if(skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) == 1){
+                    R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
+                    if(r1.getCode() != 0) {
+                        log.error("远程保存sku优惠信息失败");
+                    }
                 }
 
             });
