@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 1、整合MyBatis-Plus
@@ -90,6 +91,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @SpringBootApplication
 @EnableDiscoveryClient //开启nacos服务注册与发现
+@EnableFeignClients(basePackages = "org.pjj.gulimall.product.feign") //开启Feign
 @MapperScan("org.pjj.gulimall.product.dao")
 public class GulimallProductApplication {
     public static void main(String[] args) {

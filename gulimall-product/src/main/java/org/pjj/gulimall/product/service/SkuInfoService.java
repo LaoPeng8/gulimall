@@ -3,7 +3,9 @@ package org.pjj.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.pjj.common.utils.PageUtils;
 import org.pjj.gulimall.product.entity.SkuInfoEntity;
+import org.pjj.gulimall.product.entity.vo.Skus;
 
+import java.util.List;
 import java.util.Map;
 
 /**

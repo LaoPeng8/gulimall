@@ -1,6 +1,11 @@
 package org.pjj.gulimall.product.service.impl;
 
+import org.pjj.common.exception.GulimallException;
+import org.pjj.gulimall.product.entity.vo.Skus;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
