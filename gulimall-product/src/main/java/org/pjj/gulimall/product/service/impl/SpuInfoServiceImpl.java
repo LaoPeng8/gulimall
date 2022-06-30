@@ -118,7 +118,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuInfoEntity skuInfoEntity = new SkuInfoEntity();
                 BeanUtils.copyProperties(item, skuInfoEntity);
                 skuInfoEntity.setSpuId(spuInfoEntity.getId());
-                skuInfoEntity.setCatalogId(spuInfoEntity.getCatelogId());
+                skuInfoEntity.setCatelogId(spuInfoEntity.getCatelogId());
                 skuInfoEntity.setBrandId(spuInfoEntity.getBrandId());
                 skuInfoEntity.setSaleCount(0L);
                 item.getImages().forEach((image) -> {
@@ -175,6 +175,39 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity spuInfoEntity) {
         this.baseMapper.insert(spuInfoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> spuInfoEntityQueryWrapper = new QueryWrapper<>();
+
+        String catelogId = (String) params.get("catelogId");
+        if(!StringUtils.isEmpty(catelogId) && !catelogId.equals("0")) {
+            spuInfoEntityQueryWrapper.eq("catelog_id", catelogId);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if(!StringUtils.isEmpty(brandId) && !brandId.equals("0")) {
+            spuInfoEntityQueryWrapper.eq("brand_id", brandId);
+        }
+
+        String status = (String) params.get("status");
+        if(!StringUtils.isEmpty(status)) {
+            spuInfoEntityQueryWrapper.eq("publish_status", status);
+        }
+
+        String key = (String) params.get("key");
+        if(!StringUtils.isEmpty(key)) {
+            spuInfoEntityQueryWrapper.and((wrapper) -> {
+                wrapper.like("id", key).or().like("spu_name", key);
+            });
+        }
+
+        //该getPage中封装了 page对象分页current与limit, 还封装了排序sidx排序字段, order排序方式 desc/asc
+        IPage<SpuInfoEntity> page = new Query<SpuInfoEntity>().getPage(params);
+        this.page(page, spuInfoEntityQueryWrapper);
+
+        return new PageUtils(page);
     }
 
 }
