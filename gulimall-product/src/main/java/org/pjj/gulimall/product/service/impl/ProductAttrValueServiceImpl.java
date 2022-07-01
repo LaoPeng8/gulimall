@@ -1,5 +1,6 @@
 package org.pjj.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.pjj.common.exception.GulimallException;
 import org.pjj.gulimall.product.entity.AttrEntity;
 import org.pjj.gulimall.product.entity.vo.BaseAttrs;
@@ -20,6 +21,7 @@ import org.pjj.common.utils.Query;
 import org.pjj.gulimall.product.dao.ProductAttrValueDao;
 import org.pjj.gulimall.product.entity.ProductAttrValueEntity;
 import org.pjj.gulimall.product.service.ProductAttrValueService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("productAttrValueService")
@@ -56,6 +58,27 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
             this.saveBatch(collect);
         }
+    }
+
+    @Override
+    public List<ProductAttrValueEntity> baseAttrlistforspu(Long spuId) {
+        List<ProductAttrValueEntity> entities = this.baseMapper.selectList(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+        return entities;
+    }
+
+    @Transactional
+    @Override
+    public void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> entities) {
+        // 由于修改提交得值, 可能存在之前没有得值. 也有可能原本存在得值, 修改后没有了
+        // 所有不能直接update, 正确做法为 先删除掉之前得全部值, 再添加入需要修改得值(插入)
+
+        this.baseMapper.delete(new UpdateWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+
+        List<ProductAttrValueEntity> collect = entities.stream().map((entity) -> {
+            entity.setSpuId(spuId);
+            return entity;
+        }).collect(Collectors.toList());
+        this.saveBatch(collect);
     }
 
 }
