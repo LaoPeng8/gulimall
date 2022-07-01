@@ -32,8 +32,8 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
     @PostMapping("/done")
-    public R finish(@RequestBody @Valid PurchaseDoneVo purchaseDoneVo) {
-
+    public R finish(@RequestBody @Valid PurchaseDoneVo doneVo) {
+        purchaseService.done(doneVo);
 
         return R.ok();
     }

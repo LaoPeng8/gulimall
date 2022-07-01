@@ -3,6 +3,7 @@ package org.pjj.gulimall.ware.entity.vo;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author PengJiaJun
@@ -14,6 +15,6 @@ public class PurchaseDoneVo {
     @NotNull
     private Long id;
 
-    private PurchaseDoneItemVo items;
+    private List<PurchaseDoneItemVo> items;
 
 }

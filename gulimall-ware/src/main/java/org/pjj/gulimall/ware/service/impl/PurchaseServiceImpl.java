@@ -6,14 +6,14 @@ import org.pjj.common.exception.BizCodeEnum;
 import org.pjj.common.exception.GulimallException;
 import org.pjj.gulimall.ware.entity.PurchaseDetailEntity;
 import org.pjj.gulimall.ware.entity.vo.MergeVo;
+import org.pjj.gulimall.ware.entity.vo.PurchaseDoneItemVo;
+import org.pjj.gulimall.ware.entity.vo.PurchaseDoneVo;
 import org.pjj.gulimall.ware.service.PurchaseDetailService;
+import org.pjj.gulimall.ware.service.WareSkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -33,6 +33,9 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
     @Autowired
     private PurchaseDetailService purchaseDetailService;
+
+    @Autowired
+    private WareSkuService wareSkuService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -149,6 +152,46 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             }).collect(Collectors.toList());
             purchaseDetailService.updateBatchById(collect);
         });
+
+    }
+
+    @Transactional
+    @Override
+    public void done(PurchaseDoneVo doneVo) {
+        // 1. 改变采购单中每一个采购项(采购需求)的状态
+        Boolean flag = true;
+        List<PurchaseDetailEntity> updates = new ArrayList<>();
+        List<PurchaseDoneItemVo> items = doneVo.getItems();
+        for (PurchaseDoneItemVo item : items) {
+            PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+            if(item.getStatus() == WareConstant.PurchaseDetailStatusEnum.HASEERROR.getCode()) {
+                //采购项状态为 HASEERROR(4) 则说明采购失败, 则将标志位置为false 表示至少有一项采购项 采购失败
+                flag = false;
+                purchaseDetailEntity.setStatus(item.getStatus());//设置采购失败状态
+            }else {
+                // 采购状态不为失败, 则采购成功, 设置采购成功状态
+                purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());
+
+                // 2. 将成功采购的采购项进行入库
+                PurchaseDetailEntity entity = purchaseDetailService.getById(item.getItemId());
+                wareSkuService.addStock(Long.parseLong(entity.getSkuId()), entity.getWareId(), entity.getSkuNum());
+            }
+            //设置采购项Id
+            purchaseDetailEntity.setId(item.getItemId());
+            updates.add(purchaseDetailEntity);
+        }
+        purchaseDetailService.updateBatchById(updates);//批量进行更新采购项(失败与成功的采购项状态, 在上一步已经进行设置了)
+
+        // 3. 改变采购单状态 (只有所有采购项都完成采购, 采购单状态才是完成采购. 只要有一个采购项采购失败, 则采购单状态为有异常)
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setId(doneVo.getId());
+        purchaseEntity.setUpdateTime(new Date());
+        if(flag) {
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.FINISH.getCode());
+        }else{
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.HASEERROR.getCode());
+        }
+        this.updateById(purchaseEntity);
 
     }
 
