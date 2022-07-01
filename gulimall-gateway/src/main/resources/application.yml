@@ -46,6 +46,15 @@ spring:
             # 意思是将从网关过来的请求，去掉/api/, 用 代替
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        # http://localhost:88/api/ware/wareinfo/list  =>  http://gulimall-ware/ware/wareinfo/list
+        - id: ware_route
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            # 意思是将从网关过来的请求，去掉/api/, 用 代替
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:

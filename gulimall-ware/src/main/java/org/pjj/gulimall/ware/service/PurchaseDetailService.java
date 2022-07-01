@@ -2,10 +2,9 @@ package org.pjj.gulimall.ware.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.pjj.common.utils.PageUtils;
+import org.pjj.gulimall.ware.entity.PurchaseDetailEntity;
 import org.pjj.gulimall.ware.entity.PurchaseEntity;
-import org.pjj.gulimall.ware.entity.vo.MergeVo;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,16 +14,8 @@ import java.util.Map;
  * @email 2779824672@qq.com
  * @date 2022-05-07 20:47:36
  */
-public interface PurchaseService extends IService<PurchaseEntity> {
+public interface PurchaseDetailService extends IService<PurchaseDetailEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
-
-    PageUtils queryPageUnreceive(Map<String, Object> params);
-
-    void assignPerson(PurchaseEntity purchaseEntity);
-
-    void mergePurchase(MergeVo mergeVo);
-
-    void received(List<Long> ids);
 }
 
