@@ -3,6 +3,8 @@
 > ***作者: LaoPeng***
 >
 > ***2022/5/6 18:30 始***
+> 
+> ***2022/7/2 02:00 基础篇结束***
 
 
 
@@ -149,4 +151,24 @@ OK！问题解决！
 参考 https://www.jb51.net/article/201223.htm 操作的, 
 docker network connect命令用于将容器连接到网络。可以按名称或ID连接容器。 一旦连接，容器可以与同一网络中的其他容器通信。
 docker network connect common-network 2c05287f844c  # 将一个容器(2c05287f844c)加入到网络common-network中
+```
+
+# 记录 2022/7/2
+```
+谷粒商城基础篇完结了, 因为要准备面试了打算看一看 集合底层实习方式 ArrayList HashMap HashSet List Map TreeMap TreeSet LinkedHashSet LinkedHashMap 红黑树 双向链表 集合等内容
+https://www.bilibili.com/video/BV1YA411T76k?p=1&vd_source=620666d44aeeacda9c4cec0e1487afcc 韩顺平老师得Java集合专题, 之前看过韩老师得 数据结构与算法 觉得还不错
+
+谷粒商城基础篇总结:
+1. 分布式基础概念
+微服务、注册中心、配置中心、远程调用、Feign、网关
+
+2. 基础开发
+SpringBoot、SpringCloud、MyBatis-Plus、Vue组件化、阿里云Oss
+
+3. 环境
+Vagrant、Linux、Docker、MySQL、Redis、逆向工程&人人开源
+
+4. 开发规范
+数据校验JSR303、全局异常处理、全局统一返回、全局跨域处理、枚举类型、业务状态码、VO与TO与PO划分、逻辑删除、Lombok: @Data、@Slf4j
+
 ```
